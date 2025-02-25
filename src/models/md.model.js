@@ -1,7 +1,7 @@
-import pool from '../db/dcConnection.js'
 import axios from 'axios'
+import { format } from 'date-fns'
+import pool from '../db/index.js'
 import ErrorHandler from '../utils/errorHandler.js'
-import { format, addYears } from 'date-fns'
 export const getEZNewCsatSurvey_m = async (data) => {
   let conn
   try {

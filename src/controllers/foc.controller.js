@@ -1,27 +1,27 @@
 import {
-    actionSend_m,
-    actionUpdate_m,
-    get_complaints_History_via_by_id_m,
-    getcomplaintsbyfocID_m,
-    getComplaintsviaGangIDStatus_m,
-    getcountcomplaintsbyID_m,
-    getDTRComplaints_m,
-    getdtrcomplaintsbyID_m,
-    getFOCComplaints_m,
-    getFOCcomplaintsbyID_m,
-    getFocProfileData_m,
-    getGang_m,
-    getGanglist_m,
-    getGangLineMan_m,
-    getSubCategory_m,
-    UpdateGang_m,
-    updategangdetails_m,
-    updateProfile_m,
-    updateProfilePass_m,
-    getFOCDashboardCount_m,
-  } from '../models/foc.js'
-  import { ApiResponse } from '../utils/ApiResponse.js'
-  import ErrorHandler from '../utils/errorHandler.js'
+  actionSend_m,
+  actionUpdate_m,
+  get_complaints_History_via_by_id_m,
+  getcomplaintsbyfocID_m,
+  getComplaintsviaGangIDStatus_m,
+  getcountcomplaintsbyID_m,
+  getDTRComplaints_m,
+  getdtrcomplaintsbyID_m,
+  getFOCComplaints_m,
+  getFOCcomplaintsbyID_m,
+  getFOCDashboardCount_m,
+  getFocProfileData_m,
+  getGang_m,
+  getGangLineMan_m,
+  getGanglist_m,
+  getSubCategory_m,
+  UpdateGang_m,
+  updategangdetails_m,
+  updateProfile_m,
+  updateProfilePass_m,
+} from '../models/foc.model.js'
+import { ApiResponse } from '../utils/ApiResponse.js'
+import ErrorHandler from '../utils/errorHandler.js'
   
   export const actionSend = async (req, res, next) => {
     try {

@@ -1,14 +1,7 @@
 import mariadb from 'mariadb'
 import { format, addYears } from 'date-fns'
-import pool from '../db/dcConnection.js'
+import pool from '../db/index.js'
 import ErrorHandler from '../utils/errorHandler.js'
-// const pool = mariadb.createPool({
-//   host: 'localhost',
-//   user: 'root',
-//   password: 'root',
-//   database: 'test',
-//   connectionLimit: 50,
-// })
 
 export const getCopComplaints_m = async () => {
   let conn

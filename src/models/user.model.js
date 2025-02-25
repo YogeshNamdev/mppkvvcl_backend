@@ -1,13 +1,7 @@
-import mariadb from 'mariadb'
+
 import ErrorHandler from '../utils/errorHandler.js'
 import { sendCookie } from '../utils/features.js'
-const pool = mariadb.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'test',
-  connectionLimit: 50,
-})
+import pool from '../db/index.js'
 
 export const login_m = async (req, res, next) => {
   let conn

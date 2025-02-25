@@ -1,6 +1,6 @@
-import mariadb from 'mariadb'
-import pool from '../db/dcConnection.js'
-import { format, addYears } from 'date-fns'
+
+import { format } from 'date-fns'
+import pool from '../db/index.js'
 import ErrorHandler from '../utils/errorHandler.js'
 // const pool = mariadb.createPool({
 //   host: 'localhost',

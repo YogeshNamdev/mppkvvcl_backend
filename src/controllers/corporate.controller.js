@@ -1,10 +1,10 @@
 import {
-    get_complaints_details_via_by_id_m,
-    get_complaints_History_via_by_id_m,
-    getCopComplaints_m,
-  } from '../models/corporate.js'
-  import { ApiResponse } from '../utils/ApiResponse.js'
-  import ErrorHandler from '../utils/errorHandler.js'
+  get_complaints_details_via_by_id_m,
+  get_complaints_History_via_by_id_m,
+  getCopComplaints_m,
+} from '../models/corporate.model.js'
+import { ApiResponse } from '../utils/ApiResponse.js'
+import ErrorHandler from '../utils/errorHandler.js'
   
   export const getCopComplaints = async (req, res, next) => {
     try {

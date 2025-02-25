@@ -1,10 +1,10 @@
 import mysql from 'mysql2/promise';
 import { DB_NAME } from '../constants.js';
 
-let connectDB;
+let pool;
 
 try {
-  connectDB = mysql.createPool({
+  pool = mysql.createPool({
     host: 'localhost',
     port: 3306,
     user: 'root',
@@ -21,4 +21,4 @@ try {
   process.exit(1); 
 }
 
-export default connectDB;
+export default pool;

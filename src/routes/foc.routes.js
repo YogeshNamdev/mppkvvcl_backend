@@ -1,5 +1,5 @@
+import bodyParser from 'body-parser'
 import express from 'express'
-import { actionValidator, validateHandler } from '../lib/validators.js'
 import {
   actionSend,
   actionUpdate,
@@ -11,19 +11,17 @@ import {
   getdtrcomplaintsbyID,
   getFOCComplaints,
   getFOCcomplaintsbyID,
+  getFOCDashboardCount,
   getFocProfileData,
   getGang,
-  getGanglist,
   getGangLineMan,
+  getGanglist,
   getSubCategory,
   UpdateGang,
   updategangdetails,
   updateProfile,
   updateProfilePass,
-  getFOCDashboardCount,
-} from '../controllers/foc.js'
-import bodyParser from 'body-parser'
-import { isAuthenticated } from '../middlewares/auth.js'
+} from '../controllers/foc.controller.js'
 const router = express.Router()
 
 router.use(bodyParser.json())

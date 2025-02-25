@@ -1,3 +1,4 @@
+import bodyParser from 'body-parser'
 import express from 'express'
 import {
   actionSupSend,
@@ -16,6 +17,9 @@ import {
   get_data_via_searchID,
   get_dc_details,
   get_division_details,
+  get_feeder_wise_dc,
+  get_feeder_wise_division,
+  get_feeder_wise_feeder,
   get_fetchAreaNameData,
   get_fetchColonyNameData,
   get_fetchfeederNameData,
@@ -62,12 +66,7 @@ import {
   updateDtrWorngDC,
   updateservey,
   updateWorngDC,
-  get_feeder_wise_division,
-  get_feeder_wise_dc,
-  get_feeder_wise_feeder,
-} from '../controllers/supervisor.js'
-import { isAuthenticated } from '../middlewares/auth.js'
-import bodyParser from 'body-parser'
+} from '../controllers/supervisor.controller.js'
 const router = express.Router()
 
 router.use(bodyParser.json())
