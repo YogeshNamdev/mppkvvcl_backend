@@ -14,11 +14,11 @@ app.use(express.urlencoded({extended: true, limit: "16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 
-import supervisorRoute from './routes/supervisor.router.js'
-import focRoute from './routes/foc.router.js'
-import userRoute from './routes/user.router.js'
-import corporateRoute from './routes/corporate.router.js'
-import MDRoute from './routes/md.router.js'
+import supervisorRoute from './routes/supervisor.routes.js'
+import focRoute from './routes/foc.routes.js'
+import userRoute from './routes/user.routes.js'
+import corporateRoute from './routes/corporate.routes.js'
+import MDRoute from './routes/md.routes.js'
 
 // Routes
 app.use('/api/v1/user', userRoute)

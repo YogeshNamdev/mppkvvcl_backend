@@ -1,5 +1,3 @@
-import mariadb from 'mariadb'
-import { format, addYears } from 'date-fns'
 import pool from '../db/index.js'
 import ErrorHandler from '../utils/errorHandler.js'
 
