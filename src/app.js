@@ -21,11 +21,11 @@ import corporateRoute from './routes/corporate.router.js'
 import MDRoute from './routes/md.router.js'
 
 // Routes
-app.use('/user', userRoute)
-app.use('/superwiser', supervisorRoute)
-app.use('/foc', focRoute)
-app.use('/corporate', corporateRoute)
-app.use('/MD', MDRoute)
+app.use('/api/v1/user', userRoute)
+app.use('/api/v1/superwiser', supervisorRoute)
+app.use('/api/v1/foc', focRoute)
+app.use('/api/v1/corporate', corporateRoute)
+app.use('/api/v1/MD', MDRoute)
 
 
 export { app }
