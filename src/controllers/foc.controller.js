@@ -20,6 +20,7 @@ import {
   updateProfile_m,
   updateProfilePass_m,
 } from '../models/foc.model.js'
+import {ApiError} from '../utils/ApiError.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import ErrorHandler from '../utils/errorHandler.js'
   
@@ -304,18 +305,34 @@ import ErrorHandler from '../utils/errorHandler.js'
       next(new ErrorHandler(err.message, 500))
     }
   }
+
+
   export const getFOCDashboardCount = async (req, res, next) => {
-    try {
-      const userId = req.body.id
-      const complaintData = await getFOCDashboardCount_m(userId)
-      return res
-        .status(200)
-        .json(
-          new ApiResponse(200, complaintData, 'Complaints retrieved successfully')
-        )
-    } catch (err) {
-      console.error('Error in getcountcomplaintsbyID:', err)
-      next(new ErrorHandler('Internal server error', 500))
+    const userId = req.body.id;
+    if (!userId) {
+      throw new ApiError(400, 'User ID is required');
     }
-  }
+  
+    const complaintData = await getFOCDashboardCount_m(userId);
+  
+    return res
+      .status(200)
+      .json(new ApiResponse(200, complaintData, 'Complaints retrieved successfully'));
+  };
+  
+
+  // export const getFOCDashboardCount = async (req, res, next) => {
+  //   try {
+  //     const userId = req.body.id
+  //     const complaintData = await getFOCDashboardCount_m(userId)
+  //     return res
+  //       .status(200)
+  //       .json(
+  //         new ApiResponse(200, complaintData, 'Complaints retrieved successfully')
+  //       )
+  //   } catch (err) {
+  //     console.error('Error in getcountcomplaintsbyID:', err)
+  //     next(new ErrorHandler('Internal server error', 500))
+  //   }
+  // }
   

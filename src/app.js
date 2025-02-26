@@ -19,6 +19,7 @@ import focRoute from './routes/foc.routes.js'
 import userRoute from './routes/user.routes.js'
 import corporateRoute from './routes/corporate.routes.js'
 import MDRoute from './routes/md.routes.js'
+import errorMiddleware from "./middlewares/error.js"
 
 // Routes
 app.use('/api/v1/user', userRoute)
@@ -26,6 +27,7 @@ app.use('/api/v1/superwiser', supervisorRoute)
 app.use('/api/v1/foc', focRoute)
 app.use('/api/v1/corporate', corporateRoute)
 app.use('/api/v1/MD', MDRoute)
-
+// Error middleware
+app.use(errorMiddleware)
 
 export { app }

@@ -1,4 +1,5 @@
 // import mariadb from 'mariadb'
+import { ApiError } from '../utils/ApiError.js'
 import pool from '../db/index.js'
 import ErrorHandler from '../utils/errorHandler.js'
 
@@ -841,94 +842,182 @@ export const updateProfilePass_m = async (data) => {
     if (conn) await conn.release() // End the connection back to the pool
   }
 }
+// export const getFOCDashboardCount_m = async (id) => {
+//   let conn
+//   try {
+//     conn = await pool.getConnection()
+//     const [userFocCenterId] = await conn.query(
+//       'SELECT users_foc_center_id FROM users WHERE users_id = ?',
+//       [id]
+//     )
+
+//     if (userFocCenterId) {
+//       const usersFocCenterId = userFocCenterId[0].users_foc_center_id
+
+//       const [gangIds] = await conn.query(
+//         'SELECT GROUP_CONCAT(gang_id) AS gang_ids FROM gang WHERE gang_foc_id IN (?)',
+//         [usersFocCenterId.split(',')]
+//       )
+//       const gangIdsArray = gangIds[0].gang_ids
+//         ? gangIds[0].gang_ids.split(',')
+//         : []
+
+//       const [res1] = await conn.query(
+//         'SELECT COUNT(complaints_id) AS monthly_open_complain FROM complaints WHERE complaints.complaints_main_category IN (17,20) AND complaints.complaints_assign_foc_center_id IN (?) AND complaints.complaints_current_status = 1',
+//         [usersFocCenterId]
+//       )
+
+//       const [res2] = await conn.query(
+//         'SELECT COUNT(complaints_id) AS monthly_close_complain FROM complaints WHERE complaints.complaints_main_category IN (17,20) AND complaints.complaints_assign_foc_center_id IN (?) AND complaints.complaints_current_status = 4',
+//         [usersFocCenterId]
+//       )
+
+//       const [res3] = await conn.query(
+//         'SELECT COUNT(complaints_id) AS monthly_attend_complain FROM complaints WHERE complaints.complaints_main_category IN (17,20) AND complaints.complaints_assign_foc_center_id IN (?) AND complaints.complaints_current_status = 3',
+//         [usersFocCenterId]
+//       )
+
+//       const [res4] = await conn.query(
+//         'SELECT COUNT(complaints_id) AS monthly_reopen_complain FROM complaints WHERE complaints.complaints_main_category IN (17,20) AND complaints.complaints_assign_foc_center_id IN (?) AND complaints.complaints_current_status = 5',
+//         [usersFocCenterId]
+//       )
+
+//       const [res5] = await conn.query(
+//         'SELECT COUNT(complaints_id) AS monthly_total_complain FROM complaints WHERE complaints.complaints_main_category IN (17,20) AND complaints.complaints_assign_foc_center_id IN (?)',
+//         [usersFocCenterId]
+//       )
+
+//       const [res6] = await conn.query(
+//         'SELECT COUNT(complaints_id) AS monthly_supply_complain FROM complaints WHERE complaints.complaints_main_category = 17 AND complaints.complaints_assign_foc_center_id IN (?)',
+//         [usersFocCenterId]
+//       )
+
+//       const [res7] = await conn.query(
+//         'SELECT COUNT(complaints_id) AS monthly_acci_complain FROM complaints WHERE complaints.complaints_main_category = 20 AND complaints.complaints_assign_foc_center_id IN (?)',
+//         [usersFocCenterId]
+//       )
+
+//       const [sup] = await conn.query(
+//         'SELECT COUNT(CASE WHEN complaints_current_status = 1 THEN complaints_id END) AS total_open,  COUNT(CASE WHEN complaints_current_status = 3 THEN complaints_id END) AS total_attended, DATE(complaints.complaints_created_date) AS date FROM complaints WHERE complaints.complaints_main_category = 17 AND date(complaints.complaints_created_date) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND date(complaints.complaints_created_date)  <= CURDATE() and complaints.complaints_assign_foc_center_id IN (?) GROUP BY DATE(complaints.complaints_created_date) limit 7',
+//         [usersFocCenterId]
+//       )
+
+//       const [acc] = await conn.query(
+//         'SELECT COUNT(CASE WHEN complaints_current_status = 1 THEN complaints_id END) AS total_open, COUNT(CASE WHEN complaints_current_status = 3 THEN complaints_id END) AS total_attended, DATE(complaints.complaints_created_date) AS date FROM complaints WHERE complaints.complaints_main_category = 20 AND date(complaints.complaints_created_date) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND date(complaints.complaints_created_date)  <= CURDATE()  and complaints.complaints_assign_foc_center_id IN (?) GROUP BY DATE(complaints.complaints_created_date) limit 7',
+//         [usersFocCenterId]
+//       )
+
+//       const [gang_assign] = await conn.query(
+//         'SELECT COUNT(complaints.complaints_id) AS assign_complaints FROM complaints WHERE complaints.complaints_assign_gang_id IN (?) AND complaints.complaints_current_status = 1',
+//         [gangIdsArray]
+//       )
+
+//       // return {
+//       //   res1: formatData(res1),
+//       //   res2: formatData(res2),
+//       //   res3: formatData(res3),
+//       //   res4: formatData(res4),
+//       //   res5: formatData(res5),
+//       //   res6: formatData(res6),
+//       //   res7: formatData(res7),
+//       //   sup: sup ? sup.map(formatData) : [],
+//       //   acc: acc ? acc.map(formatData) : [],
+//       //   gang_assign: gangAssign ? gangAssign.assign_complaints.toString() : [],
+//       // }
+//       return { res1, res2, res3, res4, res5, res6, res7, sup, acc, gang_assign }
+//     }
+//   } catch (err) {
+//     console.error('Error in getcountcomplaintsbyID_m:', err)
+//     throw new ErrorHandler('Database query failed', 500)
+//   } finally {
+//     if (conn) conn.release() // End the connection back to the pool
+//   }
+// }
+
 export const getFOCDashboardCount_m = async (id) => {
-  let conn
+  let conn;
   try {
-    conn = await pool.getConnection()
+    conn = await pool.getConnection();
+
     const [userFocCenterId] = await conn.query(
       'SELECT users_foc_center_id FROM users WHERE users_id = ?',
       [id]
-    )
+    );
 
-    if (userFocCenterId) {
-      const usersFocCenterId = userFocCenterId[0].users_foc_center_id
-
-      const [gangIds] = await conn.query(
-        'SELECT GROUP_CONCAT(gang_id) AS gang_ids FROM gang WHERE gang_foc_id IN (?)',
-        [usersFocCenterId.split(',')]
-      )
-      const gangIdsArray = gangIds[0].gang_ids
-        ? gangIds[0].gang_ids.split(',')
-        : []
-
-      const [res1] = await conn.query(
-        'SELECT COUNT(complaints_id) AS monthly_open_complain FROM complaints WHERE complaints.complaints_main_category IN (17,20) AND complaints.complaints_assign_foc_center_id IN (?) AND complaints.complaints_current_status = 1',
-        [usersFocCenterId]
-      )
-
-      const [res2] = await conn.query(
-        'SELECT COUNT(complaints_id) AS monthly_close_complain FROM complaints WHERE complaints.complaints_main_category IN (17,20) AND complaints.complaints_assign_foc_center_id IN (?) AND complaints.complaints_current_status = 4',
-        [usersFocCenterId]
-      )
-
-      const [res3] = await conn.query(
-        'SELECT COUNT(complaints_id) AS monthly_attend_complain FROM complaints WHERE complaints.complaints_main_category IN (17,20) AND complaints.complaints_assign_foc_center_id IN (?) AND complaints.complaints_current_status = 3',
-        [usersFocCenterId]
-      )
-
-      const [res4] = await conn.query(
-        'SELECT COUNT(complaints_id) AS monthly_reopen_complain FROM complaints WHERE complaints.complaints_main_category IN (17,20) AND complaints.complaints_assign_foc_center_id IN (?) AND complaints.complaints_current_status = 5',
-        [usersFocCenterId]
-      )
-
-      const [res5] = await conn.query(
-        'SELECT COUNT(complaints_id) AS monthly_total_complain FROM complaints WHERE complaints.complaints_main_category IN (17,20) AND complaints.complaints_assign_foc_center_id IN (?)',
-        [usersFocCenterId]
-      )
-
-      const [res6] = await conn.query(
-        'SELECT COUNT(complaints_id) AS monthly_supply_complain FROM complaints WHERE complaints.complaints_main_category = 17 AND complaints.complaints_assign_foc_center_id IN (?)',
-        [usersFocCenterId]
-      )
-
-      const [res7] = await conn.query(
-        'SELECT COUNT(complaints_id) AS monthly_acci_complain FROM complaints WHERE complaints.complaints_main_category = 20 AND complaints.complaints_assign_foc_center_id IN (?)',
-        [usersFocCenterId]
-      )
-
-      const [sup] = await conn.query(
-        'SELECT COUNT(CASE WHEN complaints_current_status = 1 THEN complaints_id END) AS total_open,  COUNT(CASE WHEN complaints_current_status = 3 THEN complaints_id END) AS total_attended, DATE(complaints.complaints_created_date) AS date FROM complaints WHERE complaints.complaints_main_category = 17 AND date(complaints.complaints_created_date) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND date(complaints.complaints_created_date)  <= CURDATE() and complaints.complaints_assign_foc_center_id IN (?) GROUP BY DATE(complaints.complaints_created_date) limit 7',
-        [usersFocCenterId]
-      )
-
-      const [acc] = await conn.query(
-        'SELECT COUNT(CASE WHEN complaints_current_status = 1 THEN complaints_id END) AS total_open, COUNT(CASE WHEN complaints_current_status = 3 THEN complaints_id END) AS total_attended, DATE(complaints.complaints_created_date) AS date FROM complaints WHERE complaints.complaints_main_category = 20 AND date(complaints.complaints_created_date) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND date(complaints.complaints_created_date)  <= CURDATE()  and complaints.complaints_assign_foc_center_id IN (?) GROUP BY DATE(complaints.complaints_created_date) limit 7',
-        [usersFocCenterId]
-      )
-
-      const [gang_assign] = await conn.query(
-        'SELECT COUNT(complaints.complaints_id) AS assign_complaints FROM complaints WHERE complaints.complaints_assign_gang_id IN (?) AND complaints.complaints_current_status = 1',
-        [gangIdsArray]
-      )
-
-      // return {
-      //   res1: formatData(res1),
-      //   res2: formatData(res2),
-      //   res3: formatData(res3),
-      //   res4: formatData(res4),
-      //   res5: formatData(res5),
-      //   res6: formatData(res6),
-      //   res7: formatData(res7),
-      //   sup: sup ? sup.map(formatData) : [],
-      //   acc: acc ? acc.map(formatData) : [],
-      //   gang_assign: gangAssign ? gangAssign.assign_complaints.toString() : [],
-      // }
-      return { res1, res2, res3, res4, res5, res6, res7, sup, acc, gang_assign }
+    if (!userFocCenterId.length) {
+      throw new ApiError(404, 'User not found');
     }
+
+    const usersFocCenterId = userFocCenterId[0].users_foc_center_id;
+    const [gangIds] = await conn.query(
+      'SELECT GROUP_CONCAT(gang_id) AS gang_ids FROM gang WHERE gang_foc_id IN (?)',
+      [usersFocCenterId.split(',')]
+    );
+
+    const gangIdsArray = gangIds[0].gang_ids ? gangIds[0].gang_ids.split(',') : [];
+
+    const queries = {
+      res1: `SELECT COUNT(complaints_id) AS monthly_open_complain FROM complaints WHERE complaints_main_category IN (17,20) AND complaints_assign_foc_center_id IN (?) AND complaints_current_status = 1`,
+      res2: `SELECT COUNT(complaints_id) AS monthly_close_complain FROM complaints WHERE complaints_main_category IN (17,20) AND complaints_assign_foc_center_id IN (?) AND complaints_current_status = 4`,
+      res3: `SELECT COUNT(complaints_id) AS monthly_attend_complain FROM complaints WHERE complaints_main_category IN (17,20) AND complaints_assign_foc_center_id IN (?) AND complaints_current_status = 3`,
+      res4: `SELECT COUNT(complaints_id) AS monthly_reopen_complain FROM complaints WHERE complaints_main_category IN (17,20) AND complaints_assign_foc_center_id IN (?) AND complaints_current_status = 5`,
+      res5: `SELECT COUNT(complaints_id) AS monthly_total_complain FROM complaints WHERE complaints_main_category IN (17,20) AND complaints_assign_foc_center_id IN (?)`,
+      res6: `SELECT COUNT(complaints_id) AS monthly_supply_complain FROM complaints WHERE complaints_main_category = 17 AND complaints_assign_foc_center_id IN (?)`,
+      res7: `SELECT COUNT(complaints_id) AS monthly_acci_complain FROM complaints WHERE complaints_main_category = 20 AND complaints_assign_foc_center_id IN (?)`,
+    };
+
+    const results = await Promise.all(
+      Object.entries(queries).map(async ([key, query]) => {
+        const [result] = await conn.query(query, [usersFocCenterId]);
+        return { [key]: result[0] };
+      })
+    );
+
+    const complaintData = Object.assign({}, ...results);
+
+    const [sup] = await conn.query(
+      `SELECT 
+        COUNT(CASE WHEN complaints_current_status = 1 THEN complaints_id END) AS total_open,  
+        COUNT(CASE WHEN complaints_current_status = 3 THEN complaints_id END) AS total_attended, 
+        DATE(complaints_created_date) AS date 
+      FROM complaints 
+      WHERE complaints_main_category = 17 
+      AND DATE(complaints_created_date) BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND CURDATE() 
+      AND complaints_assign_foc_center_id IN (?)
+      GROUP BY DATE(complaints_created_date) LIMIT 7`,
+      [usersFocCenterId]
+    );
+
+    const [acc] = await conn.query(
+      `SELECT 
+        COUNT(CASE WHEN complaints_current_status = 1 THEN complaints_id END) AS total_open,  
+        COUNT(CASE WHEN complaints_current_status = 3 THEN complaints_id END) AS total_attended, 
+        DATE(complaints_created_date) AS date 
+      FROM complaints 
+      WHERE complaints_main_category = 20 
+      AND DATE(complaints_created_date) BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND CURDATE()  
+      AND complaints_assign_foc_center_id IN (?)
+      GROUP BY DATE(complaints_created_date) LIMIT 7`,
+      [usersFocCenterId]
+    );
+
+    const [gang_assign] = await conn.query(
+      `SELECT COUNT(complaints_id) AS assign_complaints 
+       FROM complaints 
+       WHERE complaints_assign_gang_id IN (?) AND complaints_current_status = 1`,
+      [gangIdsArray]
+    );
+
+    return {
+      ...complaintData,
+      sup,
+      acc,
+      gang_assign,
+    };
   } catch (err) {
-    console.error('Error in getcountcomplaintsbyID_m:', err)
-    throw new ErrorHandler('Database query failed', 500)
+    console.error('Error in getFOCDashboardCount_m:', err);
+    throw new ApiError(500, 'Database query failed', [], err.stack);
   } finally {
-    if (conn) conn.release() // End the connection back to the pool
+    if (conn) conn.release();
   }
-}
+};

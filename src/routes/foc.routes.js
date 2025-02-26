@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser'
+import {asysnHandler} from '../utils/asyncHandler.js'
 import express from 'express'
 import {
   actionSend,
@@ -26,28 +27,28 @@ const router = express.Router()
 
 router.use(bodyParser.json())
 //router.use(isAuthenticated)
-router.post('/api/actionSend', actionSend)
-router.get('/api/getDTRComplaints', getDTRComplaints)
-router.get('/api/getSubCategory', getSubCategory)
-router.post('/api/getGang', getGang)
-router.post('/api/getGanglist', getGanglist)
-router.post('/api/getFOCComplaints', getFOCComplaints)
-router.post('/api/getFOCcomplaintsbyID', getFOCcomplaintsbyID)
-router.post('/api/getFocProfileData', getFocProfileData)
-router.post('/api/updateProfile', updateProfile)
-router.post('/api/updateProfilePass', updateProfilePass)
-router.post('/api/updategangdetails', updategangdetails)
-router.post('/api/getcountcomplaintsbyID', getcountcomplaintsbyID)
-router.post('/api/getcomplaintsbyfocID', getcomplaintsbyfocID)
-router.post('/api/getGangLineMan', getGangLineMan)
-router.post(
-  '/api/get_complaints_History_via_by_id',
-  get_complaints_History_via_by_id
-)
-router.post('/api/getComplaintsviaGangIDStatus', getComplaintsviaGangIDStatus)
-router.post('/api/getdtrcomplaintsbyID', getdtrcomplaintsbyID)
-router.post('/api/actionUpdate', actionUpdate)
 
-router.post('/api/UpdateGang', UpdateGang)
-router.post('/api/getFOCDashboardCount', getFOCDashboardCount)
+
+router.route('/getFOCDashboardCount').post(asysnHandler(getFOCDashboardCount))
+router.route('/getcomplaintsbyfocID').post(asysnHandler(getcomplaintsbyfocID))
+router.route('/getFOCComplaints').post(asysnHandler(getFOCComplaints))
+router.route('/getFOCcomplaintsbyID').post(asysnHandler(getFOCcomplaintsbyID))
+
+router.route('/actionSend').post(asysnHandler(actionSend))
+router.route('/getDTRComplaints').get(asysnHandler(getDTRComplaints))
+router.route('/getSubCategory').get(asysnHandler(getSubCategory))
+router.route('/getGang').post(asysnHandler(getGang))
+router.route('/getGanglist').post(asysnHandler(getGanglist))
+router.route('/getFocProfileData').post(asysnHandler(getFocProfileData))
+router.route('/updateProfile').post(asysnHandler(updateProfile))
+router.route('/updateProfilePass').post(asysnHandler(updateProfilePass))
+router.route('/updategangdetails').post(asysnHandler(updategangdetails))
+router.route('/getcountcomplaintsbyID').post(asysnHandler(getcountcomplaintsbyID))
+router.route('/getGangLineMan').post(asysnHandler(getGangLineMan))
+router.route('/get_complaints_History_via_by_id').post(asysnHandler(get_complaints_History_via_by_id))
+router.route('/getComplaintsviaGangIDStatus').post(asysnHandler(getComplaintsviaGangIDStatus))
+router.route('/getdtrcomplaintsbyID').post(asysnHandler(getdtrcomplaintsbyID))
+router.route('/actionUpdate').post(asysnHandler(actionUpdate))
+router.route('/UpdateGang').post(asysnHandler(UpdateGang))
+
 export default router
