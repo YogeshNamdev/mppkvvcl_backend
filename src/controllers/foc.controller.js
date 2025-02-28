@@ -312,9 +312,7 @@ import ErrorHandler from '../utils/errorHandler.js'
     if (!userId) {
       throw new ApiError(400, 'User ID is required');
     }
-  
     const complaintData = await getFOCDashboardCount_m(userId);
-  
     return res
       .status(200)
       .json(new ApiResponse(200, complaintData, 'Complaints retrieved successfully'));

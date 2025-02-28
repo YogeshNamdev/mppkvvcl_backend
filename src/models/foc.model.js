@@ -956,24 +956,23 @@ export const getFOCDashboardCount_m = async (id) => {
 
     const gangIdsArray = gangIds[0].gang_ids ? gangIds[0].gang_ids.split(',') : [];
 
-    const queries = {
-      res1: `SELECT COUNT(complaints_id) AS monthly_open_complain FROM complaints WHERE complaints_main_category IN (17,20) AND complaints_assign_foc_center_id IN (?) AND complaints_current_status = 1`,
-      res2: `SELECT COUNT(complaints_id) AS monthly_close_complain FROM complaints WHERE complaints_main_category IN (17,20) AND complaints_assign_foc_center_id IN (?) AND complaints_current_status = 4`,
-      res3: `SELECT COUNT(complaints_id) AS monthly_attend_complain FROM complaints WHERE complaints_main_category IN (17,20) AND complaints_assign_foc_center_id IN (?) AND complaints_current_status = 3`,
-      res4: `SELECT COUNT(complaints_id) AS monthly_reopen_complain FROM complaints WHERE complaints_main_category IN (17,20) AND complaints_assign_foc_center_id IN (?) AND complaints_current_status = 5`,
-      res5: `SELECT COUNT(complaints_id) AS monthly_total_complain FROM complaints WHERE complaints_main_category IN (17,20) AND complaints_assign_foc_center_id IN (?)`,
-      res6: `SELECT COUNT(complaints_id) AS monthly_supply_complain FROM complaints WHERE complaints_main_category = 17 AND complaints_assign_foc_center_id IN (?)`,
-      res7: `SELECT COUNT(complaints_id) AS monthly_acci_complain FROM complaints WHERE complaints_main_category = 20 AND complaints_assign_foc_center_id IN (?)`,
-    };
+    const query = `
+    SELECT 
+      COUNT(complaints_id) AS monthly_total_complain,
+      SUM(CASE WHEN complaints_current_status = 1 THEN 1 ELSE 0 END) AS monthly_open_complain,
+      SUM(CASE WHEN complaints_current_status = 4 THEN 1 ELSE 0 END) AS monthly_close_complain,
+      SUM(CASE WHEN complaints_current_status = 3 THEN 1 ELSE 0 END) AS monthly_attend_complain,
+      SUM(CASE WHEN complaints_current_status = 5 THEN 1 ELSE 0 END) AS monthly_reopen_complain,
+      SUM(CASE WHEN complaints_main_category = 17 THEN 1 ELSE 0 END) AS monthly_supply_complain,
+      SUM(CASE WHEN complaints_main_category = 20 THEN 1 ELSE 0 END) AS monthly_acci_complain
+    FROM complaints 
+    WHERE complaints_main_category IN (17, 20) 
+    AND complaints_assign_foc_center_id IN (?);
+    `;
 
-    const results = await Promise.all(
-      Object.entries(queries).map(async ([key, query]) => {
-        const [result] = await conn.query(query, [usersFocCenterId]);
-        return { [key]: result[0] };
-      })
-    );
+    const [result] = await conn.query(query, [usersFocCenterId]);
 
-    const complaintData = Object.assign({}, ...results);
+    const complaintData = result[0];
 
     const [sup] = await conn.query(
       `SELECT 
@@ -1009,7 +1008,7 @@ export const getFOCDashboardCount_m = async (id) => {
     );
 
     return {
-      ...complaintData,
+      complaintData,
       sup,
       acc,
       gang_assign,
