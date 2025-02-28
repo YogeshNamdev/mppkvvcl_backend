@@ -757,19 +757,27 @@ export const updategangdetails_m = async (data) => {
   let conn
   try {
     conn = await pool.getConnection()
-    const query =
-      'UPDATE gang SET gang_name = ?, gang_number = ? WHERE gang_id = ?'
+
+    const query = `
+      UPDATE gang 
+      SET gang_name = ?, gang_number = ? 
+      WHERE gang_id = ?
+    `
     const params = [data.gang_name, data.gang_number, data.gangId]
-    const res = await conn.query(query, params)
+
+    const [res] = await conn.query(query, params)
 
     if (res.affectedRows === 0) {
-      throw new ErrorHandler('No gang found with the provided ID', 404)
+      throw new ApiError(404, 'No gang found with the provided ID')
     }
   } catch (err) {
     console.error('Error in updategangdetails_m:', err)
-    throw new ErrorHandler('Database query failed', 500)
+    throw new ApiError(
+      err.statusCode || 500,
+      err.message || 'Database query failed'
+    )
   } finally {
-    if (conn) await conn.release() // End the connection back to the pool
+    if (conn) await conn.release() // Release connection back to the pool
   }
 }
 export const updateProfile_m = async (data) => {
@@ -802,7 +810,7 @@ export const updateProfile_m = async (data) => {
     ])
   } catch (err) {
     console.error('Error in updateProfile_m:', err)
-    throw new ErrorHandler('Database query failed', 500)
+    throw new ApiError(500, 'Database query failed')
   } finally {
     if (conn) await conn.release() // End the connection back to the pool
   }
@@ -825,7 +833,7 @@ export const updateProfilePass_m = async (data) => {
     ])
 
     if (checkPasswordResult.length === 0) {
-      throw new ErrorHandler('Old password is incorrect', 400)
+      throw new ApiError(400, 'Old password is incorrect')
     }
 
     // Update to the new password
@@ -837,7 +845,7 @@ export const updateProfilePass_m = async (data) => {
     await conn.query(updatePasswordQuery, [data.new_pass, data.users_id])
   } catch (err) {
     console.error('Error in updateProfilePass_m:', err)
-    throw new ErrorHandler('Database query failed', 500)
+    throw new ApiError(500, 'Database query failed')
   } finally {
     if (conn) await conn.release() // End the connection back to the pool
   }
@@ -935,26 +943,28 @@ export const updateProfilePass_m = async (data) => {
 // }
 
 export const getFOCDashboardCount_m = async (id) => {
-  let conn;
+  let conn
   try {
-    conn = await pool.getConnection();
+    conn = await pool.getConnection()
 
     const [userFocCenterId] = await conn.query(
       'SELECT users_foc_center_id FROM users WHERE users_id = ?',
       [id]
-    );
+    )
 
     if (!userFocCenterId.length) {
-      throw new ApiError(404, 'User not found');
+      throw new ApiError(404, 'User not found')
     }
 
-    const usersFocCenterId = userFocCenterId[0].users_foc_center_id;
+    const usersFocCenterId = userFocCenterId[0].users_foc_center_id
     const [gangIds] = await conn.query(
       'SELECT GROUP_CONCAT(gang_id) AS gang_ids FROM gang WHERE gang_foc_id IN (?)',
       [usersFocCenterId.split(',')]
-    );
+    )
 
-    const gangIdsArray = gangIds[0].gang_ids ? gangIds[0].gang_ids.split(',') : [];
+    const gangIdsArray = gangIds[0].gang_ids
+      ? gangIds[0].gang_ids.split(',')
+      : []
 
     const query = `
     SELECT 
@@ -968,11 +978,11 @@ export const getFOCDashboardCount_m = async (id) => {
     FROM complaints 
     WHERE complaints_main_category IN (17, 20) 
     AND complaints_assign_foc_center_id IN (?);
-    `;
+    `
 
-    const [result] = await conn.query(query, [usersFocCenterId]);
+    const [result] = await conn.query(query, [usersFocCenterId])
 
-    const complaintData = result[0];
+    const complaintData = result[0]
 
     const [sup] = await conn.query(
       `SELECT 
@@ -985,7 +995,7 @@ export const getFOCDashboardCount_m = async (id) => {
       AND complaints_assign_foc_center_id IN (?)
       GROUP BY DATE(complaints_created_date) LIMIT 7`,
       [usersFocCenterId]
-    );
+    )
 
     const [acc] = await conn.query(
       `SELECT 
@@ -998,25 +1008,25 @@ export const getFOCDashboardCount_m = async (id) => {
       AND complaints_assign_foc_center_id IN (?)
       GROUP BY DATE(complaints_created_date) LIMIT 7`,
       [usersFocCenterId]
-    );
+    )
 
     const [gang_assign] = await conn.query(
       `SELECT COUNT(complaints_id) AS assign_complaints 
        FROM complaints 
        WHERE complaints_assign_gang_id IN (?) AND complaints_current_status = 1`,
       [gangIdsArray]
-    );
+    )
 
     return {
       complaintData,
       sup,
       acc,
       gang_assign,
-    };
+    }
   } catch (err) {
-    console.error('Error in getFOCDashboardCount_m:', err);
-    throw new ApiError(500, 'Database query failed', [], err.stack);
+    console.error('Error in getFOCDashboardCount_m:', err)
+    throw new ApiError(500, 'Database query failed', [], err.stack)
   } finally {
-    if (conn) conn.release();
+    if (conn) conn.release()
   }
-};
+}
